@@ -16,6 +16,7 @@ export const ControlPanel: React.FC<Props> = ({ settings, onSettingsChange, onSa
     { value: 'organic', label: 'Organic' },
     { value: 'bars', label: 'Bars' },
     { value: 'spiral', label: 'Spiral' },
+    { value: '3d', label: '3D Scene' },
   ];
 
   return (
