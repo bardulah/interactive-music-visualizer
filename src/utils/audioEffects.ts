@@ -224,8 +224,8 @@ export class AudioEffectsProcessor {
     activeNodes.forEach(node => {
       try {
         node.connect(this.destination);
-      } catch (e) {
-        // Node might already be connected
+      } catch (_e) {
+        // Node might already be connected - ignore error
       }
     });
   }

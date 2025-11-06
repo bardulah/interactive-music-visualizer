@@ -99,7 +99,7 @@ function App() {
         setSettings(prev => ({ ...prev, colorPalette: suggestedPalette }));
       }
     }
-  }, [audioData, fileName]);
+  }, [audioData, fileName, settings.colorPalette]);
 
   const handleFileSelect = async (file: File) => {
     await loadAudio(file);

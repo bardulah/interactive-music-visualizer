@@ -244,8 +244,8 @@ export class AudioEffectsProcessor {
       if (node) {
         try {
           node.disconnect();
-        } catch (e) {
-          // Already disconnected
+        } catch (_e) {
+          // Already disconnected - ignore error
         }
       }
     });

@@ -22,6 +22,7 @@ export class SharingManager {
           const preset = JSON.parse(e.target?.result as string);
           resolve(preset);
         } catch (error) {
+          console.error('Failed to parse preset file:', error);
           reject(new Error('Invalid preset file'));
         }
       };

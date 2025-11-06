@@ -65,8 +65,8 @@ export class AudioContextManager {
     if (this.currentSource) {
       try {
         this.currentSource.disconnect();
-      } catch (e) {
-        // Already disconnected
+      } catch (_e) {
+        // Already disconnected - ignore error
       }
     }
 
@@ -116,8 +116,8 @@ export class AudioContextManager {
       // Disconnect the effect
       try {
         effectNode.disconnect();
-      } catch (e) {
-        // Already disconnected
+      } catch (_e) {
+        // Already disconnected - ignore error
       }
 
       // Reconnect the source
@@ -134,8 +134,8 @@ export class AudioContextManager {
     this.effectsNodes.forEach(node => {
       try {
         node.disconnect();
-      } catch (e) {
-        // Already disconnected
+      } catch (_e) {
+        // Already disconnected - ignore error
       }
     });
     this.effectsNodes = [];
@@ -181,16 +181,16 @@ export class AudioContextManager {
       if (this.currentSource) {
         try {
           this.currentSource.disconnect();
-        } catch (e) {
-          // Already disconnected
+        } catch (_e) {
+          // Already disconnected - ignore error
         }
       }
 
       if (this.analyser) {
         try {
           this.analyser.disconnect();
-        } catch (e) {
-          // Already disconnected
+        } catch (_e) {
+          // Already disconnected - ignore error
         }
       }
 

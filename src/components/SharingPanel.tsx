@@ -35,6 +35,7 @@ export const SharingPanel: React.FC<Props> = ({
           const preset = await SharingManager.importPreset(file);
           onImportPreset(preset);
         } catch (error) {
+          console.error('Failed to import preset:', error);
           alert('Failed to import preset. Please check the file format.');
         }
       }

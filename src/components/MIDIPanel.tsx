@@ -7,6 +7,15 @@ interface Props {
   className?: string;
 }
 
+// Available MIDI parameters - defined outside component to maintain stable reference
+const availableParameters = [
+  { key: 'speed', label: 'Speed', min: 0.1, max: 3 },
+  { key: 'complexity', label: 'Complexity', min: 0.1, max: 1 },
+  { key: 'sensitivity', label: 'Sensitivity', min: 0.1, max: 2 },
+  { key: 'smoothing', label: 'Smoothing', min: 0, max: 0.95 },
+  { key: 'volume', label: 'Volume', min: 0, max: 1 },
+];
+
 export const MIDIPanel: React.FC<Props> = ({ midiController, onMIDIChange, className = '' }) => {
   const [isSupported] = useState(MIDIController.isSupported());
   const [isInitialized, setIsInitialized] = useState(false);
@@ -15,14 +24,6 @@ export const MIDIPanel: React.FC<Props> = ({ midiController, onMIDIChange, class
   const [mappings, setMappings] = useState<MIDIMapping[]>([]);
   const [isLearning, setIsLearning] = useState(false);
   const [learningParameter, setLearningParameter] = useState<string>('');
-
-  const availableParameters = [
-    { key: 'speed', label: 'Speed', min: 0.1, max: 3 },
-    { key: 'complexity', label: 'Complexity', min: 0.1, max: 1 },
-    { key: 'sensitivity', label: 'Sensitivity', min: 0.1, max: 2 },
-    { key: 'smoothing', label: 'Smoothing', min: 0, max: 0.95 },
-    { key: 'volume', label: 'Volume', min: 0, max: 1 },
-  ];
 
   useEffect(() => {
     if (isSupported) {
