@@ -102,7 +102,7 @@ export class AudioEffectsProcessor {
         this.distortionGain = context.createGain();
       }
 
-      this.distortion.curve = this.createDistortionCurve(effects.distortionAmount);
+      this.distortion.curve = this.createDistortionCurve(effects.distortionAmount) as any;
       this.distortion.oversample = '4x';
       this.distortionGain!.gain.value = 0.8; // Reduce gain to prevent clipping
 
@@ -213,7 +213,7 @@ export class AudioEffectsProcessor {
 
   updateDistortionAmount(amount: number): void {
     if (this.distortion && this.currentEffects.distortionEnabled) {
-      this.distortion.curve = this.createDistortionCurve(amount);
+      this.distortion.curve = this.createDistortionCurve(amount) as any;
       this.currentEffects.distortionAmount = amount;
     }
   }

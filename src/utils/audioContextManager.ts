@@ -7,7 +7,6 @@
 export class AudioContextManager {
   private static instance: AudioContext | null = null;
   private static analyser: AnalyserNode | null = null;
-  private static destination: AudioDestinationNode | null = null;
   private static currentSource: AudioNode | null = null;
   private static effectsNodes: AudioNode[] = [];
 
@@ -17,7 +16,6 @@ export class AudioContextManager {
   static getContext(): AudioContext {
     if (!this.instance || this.instance.state === 'closed') {
       this.instance = new (window.AudioContext || (window as any).webkitAudioContext)();
-      this.destination = this.instance.destination;
     }
     return this.instance;
   }
