@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
+import { createContext, useReducer, ReactNode, Dispatch } from 'react';
 import { VisualizationSettings, Preset, PlaybackState, AudioData } from '../types';
 import { AudioEffects } from '../utils/audioEffects.refactored';
 import { colorPalettes } from '../utils/colorPalettes';
@@ -163,13 +163,15 @@ function appReducer(state: AppState, action: AppAction): AppState {
   }
 }
 
-// Context
-const AppContext = createContext<{
+// Context - exported for hooks to access
+// eslint-disable-next-line react-refresh/only-export-components
+export const AppContext = createContext<{
   state: AppState;
   dispatch: Dispatch<AppAction>;
 } | undefined>(undefined);
 
-// Provider component
+// Provider component - only export component from this file for Fast Refresh
+// Hooks are exported from ./hooks.ts
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
@@ -178,33 +180,4 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       {children}
     </AppContext.Provider>
   );
-};
-
-// Custom hook
-export const useAppContext = () => {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error('useAppContext must be used within AppProvider');
-  }
-  return context;
-};
-
-// Selector hooks for common operations
-export const useAudioData = () => {
-  const { state } = useAppContext();
-  return state.audioData;
-};
-
-export const useSettings = () => {
-  const { state, dispatch } = useAppContext();
-  return {
-    settings: state.settings,
-    updateSettings: (settings: Partial<VisualizationSettings>) =>
-      dispatch({ type: 'UPDATE_SETTINGS', payload: settings }),
-  };
-};
-
-export const usePlayback = () => {
-  const { state } = useAppContext();
-  return state.playbackState;
 };

@@ -13,6 +13,14 @@ import { MIDIPanel } from './components/MIDIPanel';
 import { useAudioVisualizer } from './hooks/useAudioVisualizer';
 import { PresetManager } from './utils/presetManager';
 import { colorPalettes, suggestPaletteFromAudio } from './utils/colorPalettes';
+
+// Extend window interface for recording state
+interface ExtendedWindow extends Window {
+  mediaRecorder?: MediaRecorder;
+}
+
+// Panel types
+type PanelKey = 'controls' | 'effects' | 'sharing' | 'streaming' | 'shader' | 'midi';
 import { AudioEffects } from './utils/audioEffects';
 import { SharingManager } from './utils/sharing';
 import { CustomShader } from './utils/shaderManager';
@@ -61,7 +69,7 @@ function App() {
   const [isRecording, setIsRecording] = useState(false);
 
   // Feature panels visibility
-  const [activePanel, setActivePanel] = useState<'controls' | 'effects' | 'sharing' | 'streaming' | 'shader' | 'midi'>('controls');
+  const [activePanel, setActivePanel] = useState<PanelKey>('controls');
 
   // Custom shader (for future use)
   const [, setCustomShader] = useState<CustomShader | null>(null);
@@ -193,10 +201,10 @@ function App() {
 
       mediaRecorder.start();
       canvasRef.current = canvas;
-      (window as any).mediaRecorder = mediaRecorder;
+      (window as ExtendedWindow).mediaRecorder = mediaRecorder;
       setIsRecording(true);
     } else {
-      const mediaRecorder = (window as any).mediaRecorder;
+      const mediaRecorder = (window as ExtendedWindow).mediaRecorder;
       if (mediaRecorder) {
         mediaRecorder.stop();
         setIsRecording(false);
@@ -361,7 +369,7 @@ function App() {
                 ].map((tab) => (
                   <button
                     key={tab.key}
-                    onClick={() => setActivePanel(tab.key as any)}
+                    onClick={() => setActivePanel(tab.key as PanelKey)}
                     className={`px-2 py-2 rounded-lg text-xs transition-all ${
                       activePanel === tab.key
                         ? 'bg-purple-600 text-white'

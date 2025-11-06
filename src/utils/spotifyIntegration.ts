@@ -1,3 +1,9 @@
+import type {
+  SpotifyTrack as SpotifyAPITrack,
+  SpotifySearchResponse,
+  SpotifyPlaylist,
+} from '../types/audio';
+
 export interface SpotifyTrack {
   id: string;
   name: string;
@@ -6,6 +12,21 @@ export interface SpotifyTrack {
   duration: number;
   previewUrl: string | null;
   imageUrl: string;
+}
+
+interface SpotifyAudioFeatures {
+  tempo: number;
+  energy: number;
+  danceability: number;
+  valence: number;
+  acousticness: number;
+  instrumentalness: number;
+}
+
+interface SpotifyCurrentlyPlaying {
+  item: SpotifyAPITrack | null;
+  is_playing: boolean;
+  progress_ms: number;
 }
 
 export class SpotifyIntegration {
@@ -88,11 +109,11 @@ export class SpotifyIntegration {
       throw new Error('Failed to search tracks');
     }
 
-    const data = await response.json();
-    return data.tracks.items.map((track: any) => ({
+    const data = await response.json() as SpotifySearchResponse;
+    return data.tracks.items.map((track: SpotifyAPITrack) => ({
       id: track.id,
       name: track.name,
-      artists: track.artists.map((artist: any) => artist.name),
+      artists: track.artists.map(artist => artist.name),
       album: track.album.name,
       duration: track.duration_ms / 1000,
       previewUrl: track.preview_url,
@@ -101,7 +122,7 @@ export class SpotifyIntegration {
   }
 
   // Get track audio features (tempo, energy, etc.)
-  async getTrackAudioFeatures(trackId: string): Promise<any> {
+  async getTrackAudioFeatures(trackId: string): Promise<SpotifyAudioFeatures> {
     const token = this.getAccessToken();
     if (!token) throw new Error('Not authenticated');
 
@@ -122,7 +143,7 @@ export class SpotifyIntegration {
   }
 
   // Get user's playlists
-  async getUserPlaylists(): Promise<any[]> {
+  async getUserPlaylists(): Promise<SpotifyPlaylist[]> {
     const token = this.getAccessToken();
     if (!token) throw new Error('Not authenticated');
 
@@ -139,12 +160,12 @@ export class SpotifyIntegration {
       throw new Error('Failed to get playlists');
     }
 
-    const data = await response.json();
+    const data = await response.json() as { items: SpotifyPlaylist[] };
     return data.items;
   }
 
   // Get currently playing track
-  async getCurrentlyPlaying(): Promise<any> {
+  async getCurrentlyPlaying(): Promise<SpotifyCurrentlyPlaying | null> {
     const token = this.getAccessToken();
     if (!token) throw new Error('Not authenticated');
 
@@ -165,8 +186,17 @@ export class SpotifyIntegration {
       throw new Error('Failed to get currently playing track');
     }
 
-    return response.json();
+    return response.json() as Promise<SpotifyCurrentlyPlaying>;
   }
+}
+
+interface SoundCloudTrack {
+  id: number;
+  title: string;
+  user: { username: string };
+  duration: number;
+  stream_url: string;
+  artwork_url: string | null;
 }
 
 export class SoundCloudIntegration {
@@ -178,7 +208,7 @@ export class SoundCloudIntegration {
   }
 
   // Search tracks (using public API)
-  static async searchTracks(query: string, limit: number = 20): Promise<any[]> {
+  static async searchTracks(query: string, limit: number = 20): Promise<SoundCloudTrack[]> {
     // Note: SoundCloud API v2 requires authentication
     // This is a simplified example - users would need to implement proper auth
     const response = await fetch(

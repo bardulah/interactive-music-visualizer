@@ -1,4 +1,5 @@
 import { AudioData } from '../types';
+import { getAudioContextConstructor } from '../types/audio';
 
 export class AudioProcessor {
   private audioContext: AudioContext | null = null;
@@ -21,7 +22,8 @@ export class AudioProcessor {
 
     // Initialize audio context on user interaction
     if (!this.audioContext) {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextConstructor = getAudioContextConstructor();
+      this.audioContext = new AudioContextConstructor();
     }
 
     // Create analyser

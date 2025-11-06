@@ -153,7 +153,10 @@ export class MIDIController {
     if (!this.listeners.has(parameter)) {
       this.listeners.set(parameter, []);
     }
-    this.listeners.get(parameter)!.push(callback);
+    const callbacks = this.listeners.get(parameter);
+    if (callbacks) {
+      callbacks.push(callback);
+    }
   }
 
   // Remove a listener
@@ -194,7 +197,9 @@ export class MIDIController {
 
         // Control Change messages
         if (status >= 176 && status <= 191) {
-          this.activeInput!.onmidimessage = originalHandler;
+          if (this.activeInput) {
+            this.activeInput.onmidimessage = originalHandler;
+          }
           resolve(data1);
         }
       };

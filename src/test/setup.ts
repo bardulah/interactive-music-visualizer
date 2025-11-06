@@ -3,6 +3,9 @@
  * Runs before all tests
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Test mocks are allowed to use 'any' for simplicity and flexibility
+
 import { afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 

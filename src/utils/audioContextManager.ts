@@ -4,6 +4,8 @@
  * Ensures proper audio routing and prevents multiple context creation
  */
 
+import { getAudioContextConstructor } from '../types/audio';
+
 export class AudioContextManager {
   private static instance: AudioContext | null = null;
   private static analyser: AnalyserNode | null = null;
@@ -15,7 +17,8 @@ export class AudioContextManager {
    */
   static getContext(): AudioContext {
     if (!this.instance || this.instance.state === 'closed') {
-      this.instance = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextConstructor = getAudioContextConstructor();
+      this.instance = new AudioContextConstructor();
     }
     return this.instance;
   }

@@ -69,7 +69,11 @@ export class AudioEffectsProcessor {
       this.source.disconnect();
       this.source.connect(this.dryGain);
       this.source.connect(this.convolver);
-      this.convolver.connect(this.reverbGain!);
+
+      if (!this.reverbGain) {
+        throw new Error('ReverbGain must be initialized');
+      }
+      this.convolver.connect(this.reverbGain);
     }
 
     if (this.reverbGain && this.dryGain) {

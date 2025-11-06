@@ -102,11 +102,17 @@ export class AudioEffectsProcessor {
         this.distortionGain = context.createGain();
       }
 
-      this.distortion.curve = this.createDistortionCurve(effects.distortionAmount) as any;
+      // TypeScript quirk: WaveShaperNode.curve type is overly strict about ArrayBuffer generics
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.distortion as any).curve = this.createDistortionCurve(effects.distortionAmount);
       this.distortion.oversample = '4x';
-      this.distortionGain!.gain.value = 0.8; // Reduce gain to prevent clipping
 
-      chain.push(this.distortion, this.distortionGain!);
+      if (!this.distortionGain) {
+        throw new Error('DistortionGain must be initialized with distortion node');
+      }
+      this.distortionGain.gain.value = 0.8; // Reduce gain to prevent clipping
+
+      chain.push(this.distortion, this.distortionGain);
     }
 
     // 2. Filter
@@ -131,16 +137,21 @@ export class AudioEffectsProcessor {
       }
 
       this.delay.delayTime.value = effects.echoDelay;
-      this.echoFeedbackGain!.gain.value = effects.echoFeedback;
-      this.echoMix!.gain.value = 0.7; // Mix level
+
+      if (!this.echoFeedbackGain || !this.echoMix) {
+        throw new Error('Echo gain nodes must be initialized with delay node');
+      }
+
+      this.echoFeedbackGain.gain.value = effects.echoFeedback;
+      this.echoMix.gain.value = 0.7; // Mix level
 
       // Echo needs special routing: input → delay → feedback → delay (loop)
       // We'll create a feedback loop within the delay node
       chain.push(this.delay);
 
       // Connect feedback loop
-      this.delay.connect(this.echoFeedbackGain!);
-      this.echoFeedbackGain!.connect(this.delay);
+      this.delay.connect(this.echoFeedbackGain);
+      this.echoFeedbackGain.connect(this.delay);
     }
 
     // 4. Reverb (last for ambience)
@@ -154,10 +165,14 @@ export class AudioEffectsProcessor {
         this.convolver.buffer = this.createReverbImpulse(2, 2);
       }
 
-      this.reverbGain!.gain.value = effects.reverbAmount;
-      this.reverbMix!.gain.value = 0.7; // Mix level
+      if (!this.reverbGain || !this.reverbMix) {
+        throw new Error('Reverb gain nodes must be initialized with convolver node');
+      }
 
-      chain.push(this.convolver, this.reverbGain!);
+      this.reverbGain.gain.value = effects.reverbAmount;
+      this.reverbMix.gain.value = 0.7; // Mix level
+
+      chain.push(this.convolver, this.reverbGain);
     }
 
     // Add all nodes to manager's chain
@@ -213,7 +228,9 @@ export class AudioEffectsProcessor {
 
   updateDistortionAmount(amount: number): void {
     if (this.distortion && this.currentEffects.distortionEnabled) {
-      this.distortion.curve = this.createDistortionCurve(amount) as any;
+      // TypeScript quirk: WaveShaperNode.curve type is overly strict about ArrayBuffer generics
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.distortion as any).curve = this.createDistortionCurve(amount);
       this.currentEffects.distortionAmount = amount;
     }
   }
