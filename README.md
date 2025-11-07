@@ -14,13 +14,15 @@ A stunning real-time audio visualization tool that transforms your music into me
 - **Fullscreen Mode**: Immersive visualization experience with auto-hiding controls
 
 ### Visualization Styles
-Choose from 6 unique visualization modes:
+Choose from 8 unique visualization modes (2D & 3D):
 - **Waveform**: Classic oscilloscope-style waveform with mirrored effects
 - **Particles**: Dynamic particle system that responds to bass and frequency
 - **Geometric**: Rotating polygons that react to different frequency ranges
 - **Organic**: Fluid, blob-like shapes with Perlin-noise-inspired movement
 - **Bars**: Frequency spectrum bars with gradient colors and reflections
 - **Spiral**: Hypnotic spiral patterns with frequency-reactive points
+- **3D Scene**: Interactive WebGL 3D visualizations (sphere, cubes, waves)
+- **Custom Shaders**: User-created GLSL shaders with audio reactivity
 
 ### Customization
 - **10 Color Palettes**: Carefully curated color schemes (Neon Dreams, Ocean Deep, Cyber Pink, etc.)
@@ -35,6 +37,14 @@ Choose from 6 unique visualization modes:
 - **3 Default Presets**: Ready-to-use starting points
 - **Video Recording**: Export visualizations as WebM video files
 - **LocalStorage Persistence**: Your presets are saved between sessions
+
+### Advanced Features
+- **Audio Effects**: Real-time reverb, echo, filters (lowpass/highpass/bandpass/notch), and distortion
+- **MIDI Controllers**: Map hardware controllers to visualization parameters with learn mode
+- **Spotify Integration**: Search and play track previews (requires API credentials)
+- **Custom Shaders**: Create GLSL shaders with built-in editor and templates
+- **Social Sharing**: Export/import presets, generate shareable URLs, take screenshots
+- **3D Visualizations**: WebGL-powered 3D scenes with OrbitControls
 
 ## 🚀 Quick Start
 
@@ -189,16 +199,23 @@ The app is fully responsive and works on mobile devices:
 - Portrait and landscape modes
 - Optimized performance for mobile GPUs
 
+## ✅ Recently Implemented Features
+
+- [x] **WebGL/Three.js 3D visualizations** - Interactive 3D scenes with audio reactivity
+- [x] **Audio effects** - Reverb, echo, filters, and distortion with real-time control
+- [x] **Social sharing features** - Export, import, and share presets; screenshot capture
+- [x] **Spotify integration** - Search and play 30-second previews (requires API key)
+- [x] **Custom shader support** - GLSL shader editor with built-in templates
+- [x] **MIDI controller support** - Hardware controller mapping with learn mode
+
 ## 🚧 Future Enhancements
 
-- [ ] WebGL/Three.js 3D visualizations
-- [ ] Audio effects (reverb, echo, filters)
-- [ ] Social sharing features
-- [ ] Spotify/SoundCloud integration
-- [ ] Custom shader support
-- [ ] MIDI controller support
-- [ ] Real-time collaboration
+- [ ] SoundCloud integration
+- [ ] Real-time collaboration mode
 - [ ] VR mode with WebXR
+- [ ] Advanced audio analysis (beat detection, key detection)
+- [ ] Export to GIF format
+- [ ] Mobile app versions (iOS/Android)
 
 ## 🤝 Contributing
 

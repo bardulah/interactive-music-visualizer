@@ -1,16 +1,18 @@
 import { AudioData } from '../types';
-import { getAudioContextConstructor } from '../types/audio';
+import { AudioContextManager } from './audioContextManager';
 
+/**
+ * Refactored AudioProcessor that uses centralized AudioContextManager
+ * This ensures proper audio routing through effects chain
+ */
 export class AudioProcessor {
-  private audioContext: AudioContext | null = null;
-  private analyser: AnalyserNode | null = null;
   private source: MediaElementAudioSourceNode | null = null;
   private audio: HTMLAudioElement | null = null;
   private frequencyData: Uint8Array | null = null;
   private timeData: Uint8Array | null = null;
 
   constructor() {
-    // AudioContext will be initialized when audio is loaded
+    // AudioContext managed centrally
   }
 
   async loadAudio(file: File): Promise<HTMLAudioElement> {
@@ -20,24 +22,18 @@ export class AudioProcessor {
     audio.src = url;
     this.audio = audio;
 
-    // Initialize audio context on user interaction
-    if (!this.audioContext) {
-      const AudioContextConstructor = getAudioContextConstructor();
-      this.audioContext = new AudioContextConstructor();
-    }
+    // Resume audio context (for autoplay policies)
+    await AudioContextManager.resume();
 
-    // Create analyser
-    this.analyser = this.audioContext.createAnalyser();
-    this.analyser.fftSize = 2048;
-    this.analyser.smoothingTimeConstant = 0.8;
+    // Get analyser from manager
+    const analyser = AudioContextManager.getAnalyser(2048, 0.8);
 
-    // Create source and connect
-    this.source = this.audioContext.createMediaElementSource(audio);
-    this.source.connect(this.analyser);
-    this.analyser.connect(this.audioContext.destination);
+    // Create source and connect through manager
+    this.source = AudioContextManager.createMediaElementSource(audio);
+    AudioContextManager.connectSource(this.source);
 
     // Initialize data arrays
-    const bufferLength = this.analyser.frequencyBinCount;
+    const bufferLength = analyser.frequencyBinCount;
     this.frequencyData = new Uint8Array(bufferLength);
     this.timeData = new Uint8Array(bufferLength);
 
@@ -45,15 +41,17 @@ export class AudioProcessor {
   }
 
   getAudioData(): AudioData | null {
-    if (!this.analyser || !this.frequencyData || !this.timeData) {
+    const analyser = AudioContextManager.getAnalyser();
+
+    if (!analyser || !this.frequencyData || !this.timeData) {
       return null;
     }
 
     // Get frequency and time domain data
     // @ts-expect-error - TS strict check issue with Uint8Array types
-    this.analyser.getByteFrequencyData(this.frequencyData);
+    analyser.getByteFrequencyData(this.frequencyData);
     // @ts-expect-error - TS strict check issue with Uint8Array types
-    this.analyser.getByteTimeDomainData(this.timeData);
+    analyser.getByteTimeDomainData(this.timeData);
 
     // Calculate average frequency
     const avgFrequency = this.frequencyData.reduce((sum, val) => sum + val, 0) / this.frequencyData.length;
@@ -82,18 +80,15 @@ export class AudioProcessor {
   }
 
   setSmoothingTimeConstant(value: number): void {
-    if (this.analyser) {
-      this.analyser.smoothingTimeConstant = value;
-    }
+    AudioContextManager.updateAnalyser(undefined, value);
   }
 
   setFFTSize(size: number): void {
-    if (this.analyser) {
-      this.analyser.fftSize = size;
-      const bufferLength = this.analyser.frequencyBinCount;
-      this.frequencyData = new Uint8Array(bufferLength);
-      this.timeData = new Uint8Array(bufferLength);
-    }
+    AudioContextManager.updateAnalyser(size, undefined);
+    const analyser = AudioContextManager.getAnalyser();
+    const bufferLength = analyser.frequencyBinCount;
+    this.frequencyData = new Uint8Array(bufferLength);
+    this.timeData = new Uint8Array(bufferLength);
   }
 
   play(): void {
@@ -132,11 +127,6 @@ export class AudioProcessor {
     if (this.source) {
       this.source.disconnect();
     }
-    if (this.analyser) {
-      this.analyser.disconnect();
-    }
-    if (this.audioContext && this.audioContext.state !== 'closed') {
-      this.audioContext.close();
-    }
+    // Context managed centrally - don't close it
   }
 }

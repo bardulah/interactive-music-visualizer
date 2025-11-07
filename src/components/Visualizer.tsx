@@ -7,6 +7,7 @@ import {
   OrganicVisualizer,
   BarsVisualizer,
   SpiralVisualizer,
+  ThreeDVisualizer,
 } from '../visualizations';
 
 interface Props {
@@ -58,6 +59,8 @@ export const Visualizer: React.FC<Props> = ({ audioData, settings, className = '
         return <BarsVisualizer {...props} />;
       case 'spiral':
         return <SpiralVisualizer {...props} />;
+      case '3d':
+        return <ThreeDVisualizer {...props} />;
       default:
         return <WaveformVisualizer {...props} />;
     }

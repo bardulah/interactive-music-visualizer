@@ -1,4 +1,4 @@
-export type VisualizationType = 'waveform' | 'particles' | 'geometric' | 'organic' | 'bars' | 'spiral';
+export type VisualizationType = 'waveform' | 'particles' | 'geometric' | 'organic' | 'bars' | 'spiral' | '3d' | 'shader';
 
 export interface AudioData {
   frequencyData: Uint8Array;
